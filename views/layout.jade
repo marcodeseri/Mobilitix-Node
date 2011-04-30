@@ -1,0 +1,35 @@
+!!! 5
+html
+	head
+		title= title
+		link(rel='stylesheet', href='http://code.jquery.com/mobile/1.0a4.1/jquery.mobile-1.0a4.1.min.css')
+
+		script(type='text/javascript', src='http://code.jquery.com/jquery-1.5.2.min.js')
+		script(type='text/javascript', src='http://code.jquery.com/mobile/1.0a4.1/jquery.mobile-1.0a4.1.min.js')
+		script
+			$('#loginForm').submit(
+				function() {
+					alert('1');
+				}
+			);
+
+	body
+		div(data-role='page')
+			div(data-role='header')
+				h1= title
+
+			div(data-role='content')
+				form(id='loginForm',action='/auth',method='POST')
+					div(id='user', data-role='fieldcontain') 
+						label(for='username') Username*
+						input(type='text',name='username',value='username')
+						
+					div(id='pass', data-role='fieldcontain')
+						label(for='password') Password*
+						input(type='password',name='password')
+						
+					input(type='submit',value='login')
+
+			div(data-role='footer')
+				p footer
+				img(src='http://m.mobilitix.mobi/img/dummy.gif', style='display:none', alt='required for Google Data', width="0", height="0")
