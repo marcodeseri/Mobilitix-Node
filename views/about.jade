@@ -1,2 +1,25 @@
-h1= title
-p defining  template 
+!!! 5
+html
+	head
+		title= title
+		link(rel='stylesheet', href='http://code.jquery.com/mobile/1.0a4.1/jquery.mobile-1.0a4.1.min.css')
+
+		script(type='text/javascript', src='http://code.jquery.com/jquery-1.5.2.min.js')
+		script(type='text/javascript', src='http://code.jquery.com/mobile/1.0a4.1/jquery.mobile-1.0a4.1.min.js')
+		script
+			$('#loginForm').submit(
+				function() {
+					alert('1');
+				}
+			);
+
+	body
+		div(data-role='page')
+			div(data-role='header', data-position='fixed')
+				h1= title
+
+			
+
+			div(data-role='footer', data-position='fixed')
+				p footer
+				img(src='http://m.mobilitix.mobi/img/dummy.gif', style='display:none', alt='required for Google Data', width="0", height="0")

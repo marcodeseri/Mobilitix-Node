@@ -88,7 +88,7 @@ app.post('/auth', gaAuth, function(req, res, next){
   	next();
 });
 
-app.get('/about', function(req, res){
+app.get('/account', function(req, res){
   res.render('about', {
     title: '1'
   });
