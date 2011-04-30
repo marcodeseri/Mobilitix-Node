@@ -90,7 +90,7 @@ app.post('/auth', gaAuth, function(req, res, next){
 
 app.get('/about', function(req, res){
   res.render('about', {
-    title: '1' + GA.token
+    title: '1'
   });
 });
 
