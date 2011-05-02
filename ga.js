@@ -6,6 +6,8 @@ var select = require('./soupselect.js').select
 ,emitter = require('events').EventEmitter;
 
 function GA(config) {
+	this.token = null;
+	
     if (config) {
         if ('user' in config) {
             this.user = config.user;
@@ -13,10 +15,14 @@ function GA(config) {
         if ('password' in config) {
             this.password = config.password;
         }
+        if('token' in config){
+        	this.token = config.token;
+        }
+       
     } else {
         throw Error("No config given.");
     }
-    this.token = null;
+    //
     //this.client = new http.createClient(443, 'www.google.com', true);
 };
 
@@ -89,12 +95,13 @@ GA.prototype.login = function(cb) {
  sort:"-ga:pagePath"
  };
  */
-GA.prototype.get = function(options, cb) {
+GA.prototype.get = function(options, feed, cb) {
+	util.debug('trying to get' + feed + '\n' + cb)
     var self = this;
 
     self.on('entries', cb);
 
-    var data_url = "/analytics/feeds/data?" + querystring.stringify(options);
+    var data_url = feed + querystring.stringify(options);
     //var data_request = this.client.request("GET", data_url, {
             //Authorization:"GoogleLogin "+this.token,
             //"GData-Version": 2
@@ -111,6 +118,8 @@ GA.prototype.get = function(options, cb) {
         }
     };
 
+
+ 	
     var req = https.request(get_options, function(res) {
         var chunks = [];
         var length = 0;
@@ -120,6 +129,7 @@ GA.prototype.get = function(options, cb) {
         });
         res.on('end', function() {
             var data_data = combineChunks(chunks, length).toString();
+
             if (data_data.indexOf("<?xml") == 0) {
                 var parser = new htmlparser.Parser(
                     new htmlparser.DefaultHandler(function(err, dom) {
