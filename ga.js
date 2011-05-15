@@ -1,4 +1,4 @@
-var select = require('./soupselect.js').select
+var select = require('soupselect').select
 ,htmlparser = require('htmlparser')
 ,util = require('util')
 ,https = require('https')
@@ -6,7 +6,7 @@ var select = require('./soupselect.js').select
 ,emitter = require('events').EventEmitter;
 
 function GA(config) {
-	this.token = null;
+    this.token = null;
 	
     if (config) {
         if ('user' in config) {
@@ -123,61 +123,153 @@ GA.prototype.get = function(options, feed, cb) {
     var req = https.request(get_options, function(res) {
         var chunks = [];
         var length = 0;
-        res.on('data', function(chunk) {
+        res.on('data', function(chunk) {           
             chunks.push(chunk);
             length += chunk.length;
         });
         res.on('end', function() {
             var data_data = combineChunks(chunks, length).toString();
-
+			//util.debug(data_data)
             if (data_data.indexOf("<?xml") == 0) {
                 var parser = new htmlparser.Parser(
                     new htmlparser.DefaultHandler(function(err, dom) {
                         if (err) {
                             this.emit('entries', err);
-                        } else {
-                            var entries = [];
-                            select(dom, 'entry').forEach(function(element) {
-                                var entry = {metrics:[], dimensions:[]};
-                                var children = element.children;
-                                var len = children.length;
-                                for (var i = 0; i < len; i++) {
-                                    var item = children[i];
-                                    if (item.name in {"id":'',"updated":''}) continue;
-                                    var metric = false;
-                                    if (item.name == "dxp:metric") {
-                                        metric = true;
-                                    }
+                        } else {                   	
+                            if(feed == '/analytics/feeds/accounts/default?'){
+                            	var entries = [];
+                                select(dom, 'entry').forEach(function(entry) {
+                                    var children = entry.children;
+                                    var len = children.length;
                                     var o = {};
-                                    if (item.attribs) {
-                                        var attrs = item.attribs;
-                                        if ('name' in attrs && 'value' in attrs) {
-                                            var name = item.attribs['name'];
-                                            var value = item.attribs['value'];
-                                            o.name = name;
-                                            if (isNaN(value)) {
-                                                o.value = value;
-                                            } else {
-                                                o.value = parseInt(value, 10);
+                                    
+                                    for (var i = 0; i < len; i++) {
+                                        var item = children[i];
+                                        
+                                       
+                                       
+                                        if (item.name == "dxp:tableId") {
+                                            //util.debug("tableId "  + item.children[0].data);
+                                            o.tableId = item.children[0].data;
+                                           
+                                        }
+                                        
+                                        
+                                        if (item.name == "title") {
+                                            //util.debug("title "  + item.children[0].data);
+                                            o.name = item.children[0].data;
+                                           
+                                        }
+                                        
+                                        //if(o.hasChildren)
+                                            
+                                    
+                                        
+                                       /*
+                                        if (item.attribs) {
+                                            var attrs = item.attribs;
+                                                                                        
+                                            if ('name' in attrs && 'value' in attrs) {
+                                                
+                                                var name = item.attribs['name'];
+                                                if (name == "ga:accountName"){
+                                                    util.debug("name" + item.attribs['value']); 
+                                                }    
+                                                
                                             }
                                         }
+                                        */
                                     }
-                                    if ('name' in o && 'value' in o) {
-                                        if (metric) {
-                                            entry.metrics.push(o);
-                                        } else {
-                                            entry.dimensions.push(o);
+                                    entries.push(o);
+                                  
+                                } ); 
+                                    /*
+                                
+                                    var children = element.children;
+                                    var len = children.length;
+                                    for (var i = 0; i < len; i++) {
+                                        var item = children[i];
+                                        var o = {};
+                                       
+                                        
+                                        if (item.name == "dxp:tableId") {
+                                            
+                                            o.value = item.text;
+                                            //util.debug("tableId" + item.toString());
                                         }
+                                       
+                                        if (item.attribs) {
+                                            var attrs = item.attribs;
+                                            if ('name' in attrs && 'value' in attrs) {
+                                                var name = item.attribs['name'];
+                                                var value = item.attribs['value'];
+                                                o.name = name;
+                                                if (isNaN(value)) {
+                                                    o.value = value;
+                                                } else {
+                                                    o.value = parseInt(value, 10);
+                                                }
+                                            }
+                                        }
+                                        
                                     }
-                                }
-                                if (entry.metrics.length > 0 || entry.dimensions.length > 0) {
-                                    self.emit('entry', entry);
-                                    entries.push(entry);
-                                }
-                            });
-
+                                   
+                                });
+    
+                                self.emit('entries', null, entries);
+                                self.removeListener('entries', cb);
+                            	*/
+                            }
+                            else{
+                            	var entries = [];
+                            	/*
+                            	select(dom, 'entry').forEach(function(element) {
+                            		
+                            			var entry = {metrics:[], dimensions:[]};
+		                                var children = element.children;
+		                                var len = children.length;
+		                                for (var i = 0; i < len; i++) {
+		                                    var item = children[i];
+		                                    if (item.name in {"id":'',"updated":''}) continue;
+		                                    var metric = false;
+		                                    if (item.name == "dxp:metric") {
+		                                        metric = true;
+		                                    }
+		                                    var o = {};
+		                                    if (item.attribs) {
+		                                        var attrs = item.attribs;
+		                                        if ('name' in attrs && 'value' in attrs) {
+		                                            var name = item.attribs['name'];
+		                                            var value = item.attribs['value'];
+		                                            o.name = name;
+		                                            if (isNaN(value)) {
+		                                                o.value = value;
+		                                            } else {
+		                                                o.value = parseInt(value, 10);
+		                                            }
+		                                        }
+		                                    }
+		                                    if ('name' in o && 'value' in o) {
+		                                        if (metric) {
+		                                            entry.metrics.push(o);
+		                                        } else {
+		                                            entry.dimensions.push(o);
+		                                        }
+		                                    }
+		                                }
+		                                if (entry.metrics.length > 0 || entry.dimensions.length > 0) {
+		                                    self.emit('entry', entry);
+		                                    entries.push(entry);
+		                                }
+                            
+		                                
+                            	});
+                            	*/
+							}
+							
                             self.emit('entries', null, entries);
                             self.removeListener('entries', cb);
+                            
                         }
                 }));
                 parser.parseComplete(data_data);

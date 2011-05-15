@@ -8,18 +8,27 @@ var connect = require('connect');
 var ga = require('./ga.js');
 var sys = require('sys'); 
 
- 
+Accounts = Object; 
+Data = Object;
 
 function gaAccounts(req,res,next){
-	sys.debug('accounts'+req.cookies.authtoken)
+    sys.debug('accounts'+req.cookies.authtoken)
 	var GAA = new ga.GA({token:req.cookies.authtoken});
 	var options = {'start-index':1}
 	
 	
 	GAA.get(options, '/analytics/feeds/accounts/default?', function(err, entries) {
-    	//sys.debug(JSON.stringify(entries));
+    	Accounts = entries
+    	sys.debug(JSON.stringify(entries));
     });
     
+   next();
+}
+
+
+function gaDash(req,res,next){
+    sys.debug('accounts'+req.cookies.authtoken);    
+    Data = '1';
    next();
 }
 
@@ -127,10 +136,18 @@ app.post('/auth', gaAuth, function(req, res, next){
 
 app.get('/account', checkAuth, gaAccounts, function(req, res){
   res.render('account', {
-    title: 'Select Site Profile'
+    title: 'Select Site Profile',
+    accounts: Accounts
   });
 });
 
+
+app.get('/dashboard/:id', checkAuth, gaDash, function(req, res){
+  res.render('dashboard', {
+    title: 'Dash',
+    data: Data
+  });
+});
 
 // Only listen on $ node app.js
 

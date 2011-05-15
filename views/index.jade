@@ -1,14 +1,9 @@
 div(data-role='content')
-	form(id='loginForm',action='/auth',method='POST')
-		div(id='user', data-role='fieldcontain', type='email') 
-			label(for='username') Username*
-			input(type='text',name='username')
-										
-		div(id='pass', data-role='fieldcontain')
-			label(for='password') Password*
-			input(type='password',name='password')
-										
-			input(type='submit',value='login')
-	
-
-
+    form(id='loginForm',action='/auth',method='POST')
+        div(id='user', data-role='fieldcontain', type='email')
+            label(for='username') Username*
+            input(type='text',name='username')										
+        div(id='pass', data-role='fieldcontain')
+            label(for='password') Password*
+            input(type='password',name='password')
+            input(type='submit',value='login')

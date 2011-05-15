@@ -1,1 +1,4 @@
-p elenco degli account sta qui
+ul(data-role='listview', data-theme='g')
+    - each account in accounts
+        li
+            a(href='/dashboard/' + account.tableId)= account.name
