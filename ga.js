@@ -85,18 +85,10 @@ GA.prototype.login = function(cb) {
     req.end();
 };
 
-/*
- * var options = {
- ids:'ga:11731936',
- "start-date":"2010-09-01",
- "end-date":"2010-09-30",
- dimensions:"ga:pagePath",
- metrics:"ga:pageviews,ga:bounces,ga:entrances",
- sort:"-ga:pagePath"
- };
- */
+
 GA.prototype.get = function(options, feed, cb) {
-	util.debug('trying to get' + feed + '\n' + cb)
+	util.debug(" gad called " + JSON.stringify(options) + " " +feed)
+	
     var self = this;
 
     self.on('entries', cb);
@@ -129,13 +121,13 @@ GA.prototype.get = function(options, feed, cb) {
         });
         res.on('end', function() {
             var data_data = combineChunks(chunks, length).toString();
-			//util.debug(data_data)
             if (data_data.indexOf("<?xml") == 0) {
                 var parser = new htmlparser.Parser(
                     new htmlparser.DefaultHandler(function(err, dom) {
                         if (err) {
                             this.emit('entries', err);
-                        } else {                   	
+                        } else { 
+                        	util.debug("check feed " + feed)           	
                             if(feed == '/analytics/feeds/accounts/default?'){
                             	var entries = [];
                                 select(dom, 'entry').forEach(function(entry) {
@@ -145,84 +137,24 @@ GA.prototype.get = function(options, feed, cb) {
                                     
                                     for (var i = 0; i < len; i++) {
                                         var item = children[i];
-                                        
-                                       
-                                       
+
                                         if (item.name == "dxp:tableId") {
-                                            //util.debug("tableId "  + item.children[0].data);
-                                            o.tableId = item.children[0].data;
-                                           
+                                            o.tableId = item.children[0].data;                                       
                                         }
                                         
                                         
                                         if (item.name == "title") {
-                                            //util.debug("title "  + item.children[0].data);
-                                            o.name = item.children[0].data;
-                                           
+                                            o.name = item.children[0].data;                                     
                                         }
                                         
-                                        //if(o.hasChildren)
-                                            
-                                    
-                                        
-                                       /*
-                                        if (item.attribs) {
-                                            var attrs = item.attribs;
-                                                                                        
-                                            if ('name' in attrs && 'value' in attrs) {
-                                                
-                                                var name = item.attribs['name'];
-                                                if (name == "ga:accountName"){
-                                                    util.debug("name" + item.attribs['value']); 
-                                                }    
-                                                
-                                            }
-                                        }
-                                        */
                                     }
                                     entries.push(o);
                                   
                                 } ); 
-                                    /*
-                                
-                                    var children = element.children;
-                                    var len = children.length;
-                                    for (var i = 0; i < len; i++) {
-                                        var item = children[i];
-                                        var o = {};
-                                       
-                                        
-                                        if (item.name == "dxp:tableId") {
-                                            
-                                            o.value = item.text;
-                                            //util.debug("tableId" + item.toString());
-                                        }
-                                       
-                                        if (item.attribs) {
-                                            var attrs = item.attribs;
-                                            if ('name' in attrs && 'value' in attrs) {
-                                                var name = item.attribs['name'];
-                                                var value = item.attribs['value'];
-                                                o.name = name;
-                                                if (isNaN(value)) {
-                                                    o.value = value;
-                                                } else {
-                                                    o.value = parseInt(value, 10);
-                                                }
-                                            }
-                                        }
-                                        
-                                    }
-                                   
-                                });
-    
-                                self.emit('entries', null, entries);
-                                self.removeListener('entries', cb);
-                            	*/
                             }
                             else{
                             	var entries = [];
-                            	/*
+                            	util.debug('data feed')
                             	select(dom, 'entry').forEach(function(element) {
                             		
                             			var entry = {metrics:[], dimensions:[]};
@@ -264,7 +196,7 @@ GA.prototype.get = function(options, feed, cb) {
                             
 		                                
                             	});
-                            	*/
+                            	
 							}
 							
                             self.emit('entries', null, entries);
